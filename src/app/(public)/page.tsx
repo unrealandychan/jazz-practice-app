@@ -11,8 +11,10 @@ import {
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { AnimateIn } from '@/components/AnimateIn';
+
 export const metadata: Metadata = {
-  title: 'Jazz Practice — Your Personal Jazz Practice Companion',
+  title: 'JazzSession — Your Personal Jazz Practice Companion',
 };
 
 const FEATURES = [
@@ -59,7 +61,7 @@ export default function LandingPage() {
           <div className="w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center">
             <Music className="w-3.5 h-3.5 text-[var(--accent-foreground)]" />
           </div>
-          <span className="font-semibold text-[var(--foreground)] text-sm">Jazz Practice</span>
+          <span className="font-semibold text-[var(--foreground)] text-sm">JazzSession</span>
         </div>
         <div className="flex items-center gap-4">
           <Link
@@ -67,6 +69,12 @@ export default function LandingPage() {
             className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors hidden sm:block"
           >
             Features
+          </Link>
+          <Link
+            href="/about"
+            className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors hidden sm:block"
+          >
+            About
           </Link>
           <Link
             href="/login"
@@ -79,22 +87,34 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-24 px-6 text-center max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--muted)] text-xs text-[var(--muted-foreground)] mb-8">
+        <div
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--muted)] text-xs text-[var(--muted-foreground)] mb-8 anim-fade-in-up"
+          style={{ animationDelay: '0ms' }}
+        >
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
           Built for serious jazz musicians
         </div>
 
-        <h1 className="text-5xl sm:text-6xl font-bold text-[var(--foreground)] leading-tight mb-6">
+        <h1
+          className="text-5xl sm:text-6xl font-bold text-[var(--foreground)] leading-tight mb-6 anim-fade-in-up"
+          style={{ animationDelay: '120ms' }}
+        >
           Practice jazz with <span className="text-[var(--accent)]">intention.</span>
         </h1>
 
-        <p className="text-lg text-[var(--muted-foreground)] max-w-2xl mx-auto mb-10 leading-relaxed">
-          Jazz Practice is your all-in-one companion for guitar, saxophone, and piano — track every
-          session, explore scales and standards, lock down your time with a drift-free metronome,
-          and watch your progress grow day by day.
+        <p
+          className="text-lg text-[var(--muted-foreground)] max-w-2xl mx-auto mb-10 leading-relaxed anim-fade-in-up"
+          style={{ animationDelay: '240ms' }}
+        >
+          JazzSession is your all-in-one companion for guitar, saxophone, and piano — track every
+          session, explore scales and standards, lock your tempo with a drift-free metronome, and
+          watch your progress grow day by day.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 anim-fade-in-up"
+          style={{ animationDelay: '360ms' }}
+        >
           <Link
             href="/login"
             className="flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold text-base hover:opacity-90 transition-opacity"
@@ -109,7 +129,10 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        <div className="flex items-center justify-center gap-6 mt-10">
+        <div
+          className="flex items-center justify-center gap-6 mt-10 anim-fade-in-up"
+          style={{ animationDelay: '480ms' }}
+        >
           {INSTRUMENTS.map((inst) => (
             <span key={inst} className="text-sm text-[var(--muted-foreground)]">
               {inst}
@@ -126,18 +149,18 @@ export default function LandingPage() {
             { value: '12', label: 'Jazz Scales' },
             { value: '∞', label: 'BPM Range' },
             { value: '100%', label: 'Free to Start' },
-          ].map(({ value, label }) => (
-            <div key={label}>
+          ].map(({ value, label }, i) => (
+            <AnimateIn key={label} delay={i * 100}>
               <p className="text-3xl font-bold text-[var(--accent)]">{value}</p>
               <p className="text-sm text-[var(--muted-foreground)] mt-1">{label}</p>
-            </div>
+            </AnimateIn>
           ))}
         </div>
       </section>
 
       {/* Features */}
       <section id="features" className="py-24 px-6 max-w-6xl mx-auto">
-        <div className="text-center mb-16">
+        <AnimateIn className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] mb-4">
             Everything you need to practice better
           </h2>
@@ -145,34 +168,73 @@ export default function LandingPage() {
             Six core tools, one focused app. No clutter, no ads, no distractions — just you and the
             music.
           </p>
-        </div>
+        </AnimateIn>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {FEATURES.map(({ icon: Icon, title, desc }) => (
-            <div
-              key={title}
-              className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--accent)]/50 transition-colors group"
-            >
-              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center mb-4 group-hover:bg-[var(--accent)]/20 transition-colors">
-                <Icon className="w-5 h-5 text-[var(--accent)]" />
+          {FEATURES.map(({ icon: Icon, title, desc }, i) => (
+            <AnimateIn key={title} delay={i * 70}>
+              <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--accent)]/50 transition-colors group h-full">
+                <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center mb-4 group-hover:bg-[var(--accent)]/20 transition-colors">
+                  <Icon className="w-5 h-5 text-[var(--accent)]" />
+                </div>
+                <h3 className="font-semibold text-[var(--foreground)] mb-2">{title}</h3>
+                <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{desc}</p>
               </div>
-              <h3 className="font-semibold text-[var(--foreground)] mb-2">{title}</h3>
-              <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{desc}</p>
-            </div>
+            </AnimateIn>
+          ))}
+        </div>
+      </section>
+
+      {/* Who it's for */}
+      <section className="py-20 px-6 max-w-5xl mx-auto">
+        <AnimateIn className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-[var(--foreground)] mb-4">
+            Who is JazzSession for?
+          </h2>
+          <p className="text-[var(--muted-foreground)] max-w-xl mx-auto">
+            Whether you’re just starting out or woodshedding through the Real Book, JazzSession fits
+            where you are.
+          </p>
+        </AnimateIn>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[
+            {
+              emoji: '🎸',
+              who: 'Beginners',
+              desc: 'Start logging sessions from day one. Build a habit, track your streak, and see the hours add up — without any complicated setup.',
+            },
+            {
+              emoji: '🎷',
+              who: 'Intermediate Players',
+              desc: 'Dig into the scale & mode reference, work through jazz standards by difficulty, and use the metronome to push your tempo safely.',
+            },
+            {
+              emoji: '🎹',
+              who: 'Serious Students',
+              desc: 'Analyze your practice patterns with 30-day charts. Spot what you’re over- or under-practicing and course-correct fast.',
+            },
+          ].map(({ emoji, who, desc }, i) => (
+            <AnimateIn key={who} delay={i * 100}>
+              <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] text-center h-full">
+                <div className="text-4xl mb-4">{emoji}</div>
+                <h3 className="font-semibold text-[var(--foreground)] mb-2">{who}</h3>
+                <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{desc}</p>
+              </div>
+            </AnimateIn>
           ))}
         </div>
       </section>
 
       {/* How it works */}
       <section className="py-24 px-6 bg-[var(--card)] border-y border-[var(--border)]">
-        <div className="max-w-3xl mx-auto text-center mb-16">
+        <AnimateIn className="max-w-3xl mx-auto text-center mb-16">
           <h2 className="text-3xl font-bold text-[var(--foreground)] mb-4">
             Simple to start, built to last
           </h2>
           <p className="text-[var(--muted-foreground)]">
             One Google sign-in, and your practice data is synced and safe forever.
           </p>
-        </div>
+        </AnimateIn>
 
         <div className="max-w-2xl mx-auto space-y-6">
           {[
@@ -191,55 +253,59 @@ export default function LandingPage() {
               title: 'Track your growth',
               desc: 'Watch your streak grow, see what you practice most, and identify gaps.',
             },
-          ].map(({ step, title, desc }) => (
-            <div key={step} className="flex gap-5">
-              <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-[var(--accent-foreground)] font-bold text-sm flex items-center justify-center flex-shrink-0 mt-0.5">
-                {step}
+          ].map(({ step, title, desc }, i) => (
+            <AnimateIn key={step} delay={i * 120}>
+              <div className="flex gap-5">
+                <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-[var(--accent-foreground)] font-bold text-sm flex items-center justify-center flex-shrink-0 mt-0.5">
+                  {step}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[var(--foreground)] mb-1">{title}</h3>
+                  <p className="text-sm text-[var(--muted-foreground)]">{desc}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-[var(--foreground)] mb-1">{title}</h3>
-                <p className="text-sm text-[var(--muted-foreground)]">{desc}</p>
-              </div>
-            </div>
+            </AnimateIn>
           ))}
         </div>
       </section>
 
       {/* Pricing / Free section */}
       <section className="py-24 px-6 max-w-3xl mx-auto text-center">
-        <h2 className="text-3xl font-bold text-[var(--foreground)] mb-4">Free, always.</h2>
-        <p className="text-[var(--muted-foreground)] mb-10">
-          Jazz Practice is free to use. Sign in and take your practice seriously — no credit card
-          needed.
-        </p>
-
-        <div className="p-8 rounded-2xl border border-[var(--accent)]/50 bg-[var(--accent)]/5 text-left">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent)] mb-4">
-            Everything included
+        <AnimateIn>
+          <h2 className="text-3xl font-bold text-[var(--foreground)] mb-4">Free, always.</h2>
+          <p className="text-[var(--muted-foreground)] mb-10">
+            JazzSession is free to use. Sign in and take your practice seriously — no credit card
+            needed.
           </p>
-          <ul className="space-y-3 mb-8">
-            {[
-              'Unlimited practice session logging',
-              'Full scale & mode reference (12 scales)',
-              '30+ jazz standards with chord charts',
-              'Drift-free Tone.js metronome with swing',
-              '30-day progress charts & streak tracking',
-              'Synced to your account across devices',
-            ].map((item) => (
-              <li key={item} className="flex items-center gap-3 text-sm text-[var(--foreground)]">
-                <Check className="w-4 h-4 text-[var(--accent)] flex-shrink-0" />
-                {item}
-              </li>
-            ))}
-          </ul>
 
-          <Link
-            href="/login"
-            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:opacity-90 transition-opacity"
-          >
-            Get Started Free <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+          <div className="p-8 rounded-2xl border border-[var(--accent)]/50 bg-[var(--accent)]/5 text-left">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent)] mb-4">
+              Everything included
+            </p>
+            <ul className="space-y-3 mb-8">
+              {[
+                'Unlimited practice session logging',
+                'Full scale & mode reference (12 scales)',
+                '30+ jazz standards with chord charts',
+                'Drift-free Tone.js metronome with swing',
+                '30-day progress charts & streak tracking',
+                'Synced to your account across devices',
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-3 text-sm text-[var(--foreground)]">
+                  <Check className="w-4 h-4 text-[var(--accent)] flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <Link
+              href="/login"
+              className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold hover:opacity-90 transition-opacity"
+            >
+              Get Started Free <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </AnimateIn>
       </section>
 
       {/* Footer */}
@@ -249,23 +315,29 @@ export default function LandingPage() {
             <div className="w-6 h-6 rounded-full bg-[var(--accent)] flex items-center justify-center">
               <Music className="w-3 h-3 text-[var(--accent-foreground)]" />
             </div>
-            <span className="text-sm text-[var(--muted-foreground)]">Jazz Practice</span>
+            <span className="text-sm text-[var(--muted-foreground)]">JazzSession</span>
           </div>
           <p className="text-xs text-[var(--muted-foreground)]">
             Built with ♪ by <span className="text-[var(--foreground)] font-medium">Eddie Chan</span>
           </p>
           <div className="flex items-center gap-6">
             <Link
-              href="/login"
+              href="/about"
               className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
             >
-              Sign In
+              About
+            </Link>
+            <Link
+              href="/disclaimer"
+              className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+            >
+              Disclaimer
             </Link>
             <Link
               href="/login"
               className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
             >
-              Get Started
+              Sign In
             </Link>
           </div>
         </div>

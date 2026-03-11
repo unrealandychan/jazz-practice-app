@@ -1,6 +1,6 @@
 'use client';
 
-import { Music, Plus, Trash2 } from 'lucide-react';
+import { Mic, Music, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -42,7 +42,7 @@ export default function SessionsPage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[var(--foreground)]">Practice Sessions</h1>
@@ -126,9 +126,20 @@ export default function SessionsPage() {
                 <p className="text-lg font-bold text-[var(--accent)]">
                   {formatDuration(s.durationMinutes)}
                 </p>
+                {s.audioMemoUrl && (
+                  <a
+                    href={s.audioMemoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Play voice memo"
+                    className="p-1.5 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-colors"
+                  >
+                    <Mic className="w-4 h-4" />
+                  </a>
+                )}
                 <button
                   onClick={() => s.id && handleDelete(s.id)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--muted-foreground)] hover:text-[var(--destructive)]"
+                  className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-[var(--muted-foreground)] hover:text-[var(--destructive)]"
                   aria-label="Delete session"
                 >
                   <Trash2 className="w-4 h-4" />

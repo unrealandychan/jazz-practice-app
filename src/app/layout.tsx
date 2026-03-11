@@ -1,27 +1,18 @@
+import { GeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 
 import { AuthProvider } from '@/contexts/AuthContext';
 
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
 export const metadata: Metadata = {
   title: {
-    default: 'Jazz Practice',
-    template: '%s | Jazz Practice',
+    default: 'JazzSession',
+    template: '%s | JazzSession',
   },
   description:
-    'Your personal jazz practice companion — track sessions, explore scales, browse standards, and keep your tempo sharp. Built by Eddie Chan.',
+    'JazzSession — your personal jazz practice companion. Track sessions, explore scales, browse standards, and keep your tempo sharp. Built by Eddie Chan.',
   authors: [{ name: 'Eddie Chan' }],
   keywords: [
     'jazz',
@@ -43,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
+        className={`${GeistSans.variable} ${GeistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
         <AuthProvider>{children}</AuthProvider>
       </body>

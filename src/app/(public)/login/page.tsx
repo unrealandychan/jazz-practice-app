@@ -39,7 +39,7 @@ export default function LoginPage() {
               <Music className="w-4 h-4 text-[var(--accent-foreground)]" />
             </div>
             <span className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors">
-              Jazz Practice
+              JazzSession
             </span>
           </Link>
         </div>

@@ -33,4 +33,5 @@ export interface IPracticeSession {
   bpm?: number;
   date: string; // ISO date string YYYY-MM-DD
   createdAt: number; // unix ms
+  audioMemoUrl?: string; // Firebase Storage download URL
 }

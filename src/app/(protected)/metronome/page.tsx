@@ -16,10 +16,14 @@ const SWING_LABELS: Record<SwingFeel, string> = {
   heavy: 'Heavy Swing',
 };
 
-const SWING_RATIOS: Record<SwingFeel, number> = {
-  straight: 0.5,
-  light: 0.6,
-  heavy: 0.67,
+/**
+ * Tone.js transport.swing values (0 = straight, 1 = full 2:1 triplet swing).
+ * Straight = 0, Light = 0.5 (~60% of beat), Heavy = 1.0 (exact 2:1 triplet = 66.7%).
+ */
+const SWING_TRANSPORT: Record<SwingFeel, number> = {
+  straight: 0,
+  light: 0.5,
+  heavy: 1.0,
 };
 
 const TIME_SIGNATURES = [2, 3, 4, 5, 6, 7];
@@ -40,6 +44,8 @@ export default function MetronomePage() {
 
   const [toneLoaded, setToneLoaded] = useState(false);
   const sequenceRef = useRef<Sequence | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const synthsRef = useRef<any[]>([]);
   const tapTimesRef = useRef<number[]>([]);
 
   // Load Tone.js on client only
@@ -56,6 +62,14 @@ export default function MetronomePage() {
       sequenceRef.current.dispose();
       sequenceRef.current = null;
     }
+    synthsRef.current.forEach((s) => {
+      try {
+        s.dispose();
+      } catch {
+        console.warn('Error disposing synth:', s);
+      }
+    });
+    synthsRef.current = [];
     Tone?.getTransport().stop();
     setPlaying(false);
     setCurrentBeat(0);
@@ -68,36 +82,59 @@ export default function MetronomePage() {
     const transport = Tone.getTransport();
     transport.bpm.value = bpm;
 
-    const beats = Array.from({ length: timeSignature }, (_, i) => i);
+    // ── Swing ──────────────────────────────────────────────────────────────
+    // Apply swing on the 8th-note grid so upbeats are delayed.
+    // transport.swing ∈ [0, 1]: 0 = straight, 1 = full triplet (2:1 = 66.7%).
+    transport.swing = SWING_TRANSPORT[swing];
+    transport.swingSubdivision = '8n';
 
-    const synth = new Tone.MembraneSynth({
+    // ── Synths ─────────────────────────────────────────────────────────────
+    const accentSynth = new Tone.MembraneSynth({
+      pitchDecay: 0.025,
+      octaves: 6,
+      envelope: { attack: 0.001, decay: 0.14, sustain: 0, release: 0.1 },
+    }).toDestination();
+
+    const beatSynth = new Tone.MembraneSynth({
       pitchDecay: 0.02,
       octaves: 4,
       envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 },
     }).toDestination();
 
-    const accentSynth = new Tone.MembraneSynth({
-      pitchDecay: 0.02,
-      octaves: 6,
-      envelope: { attack: 0.001, decay: 0.12, sustain: 0, release: 0.1 },
+    // Upbeat ("and") click — distinctly lighter so you hear the shuffle
+    const upbeatSynth = new Tone.Synth({
+      oscillator: { type: 'triangle' },
+      envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.04 },
     }).toDestination();
+    upbeatSynth.volume.value = -14; // noticeably quieter than the beat
 
-    const _swingRatio = SWING_RATIOS[swing];
+    synthsRef.current = [accentSynth, beatSynth, upbeatSynth];
 
-    let _beatIndex = 0;
+    // ── Sequence ───────────────────────────────────────────────────────────
+    // Run at 8th-note resolution: each beat index maps to 2 steps.
+    //   step 0,2,4… = downbeat  → kick sound + beat-dot update
+    //   step 1,3,5… = upbeat    → hi-hat click (swing only)
+    const steps = Array.from({ length: timeSignature * 2 }, (_, i) => i);
+
     const seq = new Tone.Sequence(
-      (time: string, beat: number | string) => {
-        const s = beat === 0 ? accentSynth : synth;
-        s.triggerAttackRelease(beat === 0 ? 'C2' : 'C3', '32n', time);
-        // Swing: delay the "and" (off-beat) of every beat
-        Tone!.getDraw().schedule(() => {
-          setCurrentBeat(beat as number);
-        }, time);
-        _beatIndex++;
+      (time: string, step: number) => {
+        const isDownbeat = step % 2 === 0;
+        const beat = Math.floor(step / 2);
+
+        if (isDownbeat) {
+          const s = beat === 0 ? accentSynth : beatSynth;
+          s.triggerAttackRelease(beat === 0 ? 'C2' : 'C3', '32n', time);
+          Tone!.getDraw().schedule(() => {
+            setCurrentBeat(beat);
+          }, time);
+        } else if (swing !== 'straight') {
+          // Only fire the upbeat click when swing is active — this is what
+          // makes the triplet-shuffle feel audible.
+          upbeatSynth.triggerAttackRelease('G4', '32n', time);
+        }
       },
-      beats,
-      // Swing timing: use 8n subdivision and offset odd beats
-      '4n',
+      steps,
+      '8n', // 8th-note subdivision so transport.swing can shift the upbeats
     );
 
     seq.start(0);
@@ -114,11 +151,10 @@ export default function MetronomePage() {
     [stopMetronome],
   );
 
-  // Restart if bpm/timeSignature/swing changes while playing
+  // Restart if bpm / timeSignature / swing changes while playing
   useEffect(() => {
     if (isPlaying) {
       stopMetronome();
-      // Small delay to let stop propagate
       setTimeout(() => startMetronome(), 50);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -127,22 +163,18 @@ export default function MetronomePage() {
   function handleTap() {
     const now = Date.now();
     tapTimesRef.current.push(now);
-
-    // Only use last 8 taps
     if (tapTimesRef.current.length > 8) {
       tapTimesRef.current = tapTimesRef.current.slice(-8);
     }
-
     if (tapTimesRef.current.length >= 2) {
       const intervals = tapTimesRef.current.slice(1).map((t, i) => t - tapTimesRef.current[i]);
       const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-      const tappedBpm = Math.round(60000 / avg);
-      setBpm(tappedBpm);
+      setBpm(Math.round(60000 / avg));
     }
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-8">Metronome</h1>
 
       {/* Beat visualizer */}

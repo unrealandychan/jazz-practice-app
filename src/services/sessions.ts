@@ -6,11 +6,13 @@ import {
   getDocs,
   orderBy,
   query,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 
 import { getDeviceId } from '@/lib/deviceId';
 import { auth, db } from '@/lib/firebase';
+import { deleteMemo } from '@/services/audioMemos';
 import type { IPracticeSession } from '@/types';
 
 const SESSIONS_COLLECTION = 'sessions';
@@ -45,6 +47,14 @@ export async function getSessions(): Promise<IPracticeSession[]> {
 
 export async function deleteSession(id: string): Promise<void> {
   await deleteDoc(doc(db, SESSIONS_COLLECTION, id));
+  // Best-effort: clean up the audio memo from Storage
+  await deleteMemo(id).catch(() => {
+    console.warn('Failed to delete associated audio memo for session', id);
+  });
+}
+
+export async function updateSessionMemoUrl(id: string, audioMemoUrl: string): Promise<void> {
+  await updateDoc(doc(db, SESSIONS_COLLECTION, id), { audioMemoUrl });
 }
 
 export async function getSessionsInRange(

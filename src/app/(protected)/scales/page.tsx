@@ -13,7 +13,7 @@ export default function ScalesPage() {
   const notes = getScaleNotes(root, selected.intervals);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-2">Scales &amp; Modes</h1>
       <p className="text-[var(--muted-foreground)] mb-8">
         Jazz scale reference for all instruments.

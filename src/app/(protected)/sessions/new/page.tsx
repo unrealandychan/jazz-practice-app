@@ -4,7 +4,9 @@ import { Pause, Play, Save, Square } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import { addSession } from '@/services/sessions';
+import { AudioRecorder } from '@/components/AudioRecorder';
+import { uploadMemo } from '@/services/audioMemos';
+import { addSession, updateSessionMemoUrl } from '@/services/sessions';
 import { useSessionTimer } from '@/store/sessionTimer';
 import type { Instrument, PracticeTopic } from '@/types';
 
@@ -47,6 +49,8 @@ export default function NewSessionPage() {
   const [manualMinutes, setManualMinutes] = useState('');
   const [useTimer, setUseTimer] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [audioBlobRef, setAudioBlobRef] = useState<Blob | null>(null);
+  const [uploadPct, setUploadPct] = useState<number | null>(null);
 
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -92,14 +96,25 @@ export default function NewSessionPage() {
     setSaving(true);
     try {
       if (state === 'running') stop();
-      await addSession({
+
+      // 1. Save session metadata to Firestore first (to get the ID)
+      const sessionId = await addSession({
         instrument,
         durationMinutes,
         topics,
         notes,
-        bpm: bpm ? parseInt(bpm, 10) : undefined,
+        ...(bpm ? { bpm: parseInt(bpm, 10) } : {}),
         date: new Date().toISOString().split('T')[0],
       });
+
+      // 2. If there's a recorded memo, upload it and patch the URL back
+      if (audioBlobRef && sessionId) {
+        setUploadPct(0);
+        const audioMemoUrl = await uploadMemo(sessionId, audioBlobRef, setUploadPct);
+        await updateSessionMemoUrl(sessionId, audioMemoUrl);
+        setUploadPct(null);
+      }
+
       reset();
       router.push('/sessions');
     } catch (err) {
@@ -114,7 +129,7 @@ export default function NewSessionPage() {
     topics.length > 0 && (useTimer ? elapsedSeconds > 0 : parseInt(manualMinutes) > 0);
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-8">Log Practice Session</h1>
 
       {/* Instrument */}
@@ -122,7 +137,7 @@ export default function NewSessionPage() {
         <label className="block text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
           Instrument
         </label>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {INSTRUMENTS.map(({ value, label, emoji }) => (
             <button
               key={value}
@@ -281,6 +296,31 @@ export default function NewSessionPage() {
         />
       </section>
 
+      {/* Audio Memo */}
+      <section className="mb-8">
+        <label className="block text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
+          Voice Memo{' '}
+          <span className="normal-case font-normal">(optional · saved to your account)</span>
+        </label>
+        <AudioRecorder onBlobReady={setAudioBlobRef} />
+      </section>
+
+      {/* Upload progress */}
+      {uploadPct !== null && (
+        <div className="mb-4">
+          <div className="flex justify-between text-xs text-[var(--muted-foreground)] mb-1">
+            <span>Uploading audio…</span>
+            <span>{uploadPct}%</span>
+          </div>
+          <div className="h-1.5 rounded-full bg-[var(--muted)] overflow-hidden">
+            <div
+              className="h-full bg-[var(--accent)] transition-all duration-200"
+              style={{ width: `${uploadPct}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Save */}
       <button
         onClick={handleSave}
@@ -288,7 +328,7 @@ export default function NewSessionPage() {
         className="flex items-center gap-2 w-full justify-center py-3 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
       >
         <Save className="w-4 h-4" />
-        {saving ? 'Saving…' : 'Save Session'}
+        {saving ? (uploadPct !== null ? `Uploading… ${uploadPct}%` : 'Saving…') : 'Save Session'}
       </button>
     </div>
   );

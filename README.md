@@ -1,8 +1,12 @@
-# Jazz Practice
+# JazzSession
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![CI](https://github.com/unrealandychan/jazz-practice-app/actions/workflows/ci.yml/badge.svg)](https://github.com/unrealandychan/jazz-practice-app/actions/workflows/ci.yml)
+[![Deploy](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://vercel.com)
 
 > A focused, dark-themed practice companion for jazz musicians — built with Next.js 16, Firebase, and Tone.js.
 
-Jazz Practice helps you log sessions, explore scales and standards, keep time with a drift-free metronome, and visualise your progress over time. It works across guitar, saxophone, piano, and any other instrument you play.
+JazzSession helps you log sessions, explore scales and standards, keep time with a drift-free metronome, and visualise your progress over time. Works across guitar, saxophone, piano, and any other instrument you play.
 
 ---
 
@@ -11,9 +15,10 @@ Jazz Practice helps you log sessions, explore scales and standards, keep time wi
 | Feature | Description |
 |---|---|
 | **Session Logger** | Start a built-in timer or log manually. Track instrument, topic, BPM, and notes. |
+| **Voice Memos** | Record audio notes during a session and replay them from your session history. |
 | **Scale & Mode Reference** | 12 essential jazz scales (Dorian, Bebop, Altered, Whole Tone, …) with keyboard diagrams. |
-| **Standards Library** | 30+ jazz standards with chord progressions, feel, tempo range, and difficulty. |
-| **Metronome** | Tone.js audio engine — no drift. Tap tempo, swing feel, any time signature. |
+| **Standards Library** | 30+ jazz standards with chord progressions, feel, tempo range, and difficulty. Add your own custom standards. |
+| **Metronome** | Tone.js audio engine — no drift. Tap tempo, swing feel (straight / light / heavy), any time signature. |
 | **Progress Charts** | 30-day practice chart, daily streak counter, and breakdown by instrument and topic. |
 | **Auth + Sync** | Google Sign-In via Firebase Auth. Data syncs across all your devices automatically. |
 
@@ -23,8 +28,9 @@ Jazz Practice helps you log sessions, explore scales and standards, keep time wi
 
 - **Framework** — [Next.js 16](https://nextjs.org/) (App Router, Turbopack, TypeScript)
 - **UI** — [Tailwind CSS v4](https://tailwindcss.com/) + [Radix UI](https://www.radix-ui.com/) primitives + [Lucide](https://lucide.dev/) icons
-- **Backend / DB** — [Firebase](https://firebase.google.com/) (Firestore + Auth)
-- **Audio** — [Tone.js](https://tonejs.github.io/) (Web Audio, no scheduler drift)
+- **Backend / DB** — [Firebase](https://firebase.google.com/) (Firestore + Auth + Storage)
+- **Audio engine** — [Tone.js](https://tonejs.github.io/) (Web Audio, no scheduler drift)
+- **Audio recording** — [MediaRecorder API](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder) → Firebase Storage
 - **Charts** — [Recharts](https://recharts.org/)
 - **State** — [Zustand](https://zustand-demo.pmnd.rs/)
 - **Testing** — [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/)
@@ -37,12 +43,12 @@ Jazz Practice helps you log sessions, explore scales and standards, keep time wi
 ### Prerequisites
 
 - Node.js 20+
-- A [Firebase project](https://console.firebase.google.com/) with **Firestore** and **Google Auth** enabled
+- A [Firebase project](https://console.firebase.google.com/) with **Firestore**, **Storage**, and **Google Auth** enabled
 
 ### 1 — Clone and install
 
 ```bash
-git clone https://github.com/<your-handle>/jazz-practice-app.git
+git clone https://github.com/unrealandychan/jazz-practice-app.git
 cd jazz-practice-app
 npm install
 ```
@@ -68,12 +74,12 @@ NEXT_PUBLIC_FIREBASE_APP_ID=
 
 > All values are available in **Firebase Console → Project Settings → Your apps → SDK setup and configuration**.
 
-### 3 — Deploy Firestore security rules (first time)
+### 3 — Deploy Firestore & Storage security rules (first time)
 
 ```bash
 npm install -g firebase-tools
 firebase login
-firebase deploy --only firestore:rules
+firebase deploy --only firestore:rules,storage
 ```
 
 ### 4 — Run the dev server
@@ -103,7 +109,7 @@ src/
 ├── contexts/              # AuthContext (useAuth hook)
 ├── data/                  # Static scales and standards data
 ├── lib/                   # Firebase init, auth helpers, utilities
-├── services/              # Firestore CRUD (sessions, userProfile)
+├── services/              # Firestore CRUD + Firebase Storage (sessions, userProfile, audioMemos)
 ├── store/                 # Zustand stores (sessionTimer, metronome)
 ├── test/                  # Vitest unit tests
 └── middleware.ts           # Edge middleware — cookie-based route protection
@@ -132,7 +138,7 @@ npm run test:coverage # Vitest with coverage
 | Trigger | What runs |
 |---|---|
 | Every push / PR | Lint → Type-check → Test → Build (`ci.yml`) |
-| Merge to `main` | Firestore rules deploy (`deploy-rules.yml`) |
+| Merge to `main` | Firestore + Storage rules deploy (`deploy-rules.yml`) |
 | All PRs | Vercel preview deployment (automatic) |
 | Weekly | Dependabot npm + Actions updates |
 
@@ -156,4 +162,4 @@ Contributions are welcome! Please read the guidelines below before opening a PR.
 
 ## License
 
-[MIT](./LICENSE) © [Eddie Chan](https://github.com/eddiechan)
+[MIT](./LICENSE) © [Eddie Chan](https://github.com/unrealandychan)
