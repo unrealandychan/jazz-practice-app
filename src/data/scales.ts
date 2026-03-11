@@ -14,18 +14,18 @@ export type ScaleType =
   | 'half-whole'
   | 'pentatonic-major'
   | 'pentatonic-minor'
-  | 'blues'
+  | 'blues';
 
-export interface Scale {
-  name: string
-  type: ScaleType
-  intervals: number[] // semitones from root
-  degrees: string[]
-  description: string
-  jazzContext: string
+export interface IScale {
+  name: string;
+  type: ScaleType;
+  intervals: number[]; // semitones from root
+  degrees: string[];
+  description: string;
+  jazzContext: string;
 }
 
-export const SCALES: Scale[] = [
+export const SCALES: IScale[] = [
   {
     name: 'Major (Ionian)',
     type: 'major',
@@ -112,7 +112,8 @@ export const SCALES: Scale[] = [
     intervals: [0, 3, 5, 7, 10],
     degrees: ['1', '♭3', '4', '5', '♭7'],
     description: '5-note minor subset.',
-    jazzContext: 'Foundation of blues and soul. Stack pentatonics from different roots over jazz changes.',
+    jazzContext:
+      'Foundation of blues and soul. Stack pentatonics from different roots over jazz changes.',
   },
   {
     name: 'Blues Scale',
@@ -122,14 +123,27 @@ export const SCALES: Scale[] = [
     description: 'Minor pentatonic + ♭5 "blue note".',
     jazzContext: 'Use freely over blues progressions and dominant 7th chords.',
   },
-]
+];
 
-export const ROOTS = ['C', 'C♯/D♭', 'D', 'D♯/E♭', 'E', 'F', 'F♯/G♭', 'G', 'G♯/A♭', 'A', 'A♯/B♭', 'B']
+export const ROOTS = [
+  'C',
+  'C♯/D♭',
+  'D',
+  'D♯/E♭',
+  'E',
+  'F',
+  'F♯/G♭',
+  'G',
+  'G♯/A♭',
+  'A',
+  'A♯/B♭',
+  'B',
+];
 
-export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 export function getScaleNotes(root: string, intervals: number[]): string[] {
-  const rootIndex = NOTE_NAMES.indexOf(root.replace('♯', '#').replace('♭', 'b').split('/')[0])
-  if (rootIndex === -1) return []
-  return intervals.map((interval) => NOTE_NAMES[(rootIndex + interval) % 12])
+  const rootIndex = NOTE_NAMES.indexOf(root.replace('♯', '#').replace('♭', 'b').split('/')[0]);
+  if (rootIndex === -1) return [];
+  return intervals.map((interval) => NOTE_NAMES[(rootIndex + interval) % 12]);
 }

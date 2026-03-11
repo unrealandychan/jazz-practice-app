@@ -1,21 +1,21 @@
-import { create } from 'zustand'
+import { create } from 'zustand';
 
-export type SwingFeel = 'straight' | 'light' | 'heavy'
+export type SwingFeel = 'straight' | 'light' | 'heavy';
 
-interface MetronomeStore {
-  bpm: number
-  isPlaying: boolean
-  timeSignature: number
-  currentBeat: number
-  swing: SwingFeel
-  setBpm: (bpm: number) => void
-  setTimeSignature: (ts: number) => void
-  setSwing: (swing: SwingFeel) => void
-  setPlaying: (playing: boolean) => void
-  setCurrentBeat: (beat: number) => void
+interface IMetronomeStore {
+  bpm: number;
+  isPlaying: boolean;
+  timeSignature: number;
+  currentBeat: number;
+  swing: SwingFeel;
+  setBpm: (bpm: number) => void;
+  setTimeSignature: (ts: number) => void;
+  setSwing: (swing: SwingFeel) => void;
+  setPlaying: (playing: boolean) => void;
+  setCurrentBeat: (beat: number) => void;
 }
 
-export const useMetronome = create<MetronomeStore>((set) => ({
+export const useMetronome = create<IMetronomeStore>((set) => ({
   bpm: 120,
   isPlaying: false,
   timeSignature: 4,
@@ -27,4 +27,4 @@ export const useMetronome = create<MetronomeStore>((set) => ({
   setSwing: (swing) => set({ swing }),
   setPlaying: (isPlaying) => set({ isPlaying }),
   setCurrentBeat: (currentBeat) => set({ currentBeat }),
-}))
+}));

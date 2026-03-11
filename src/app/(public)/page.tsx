@@ -1,19 +1,19 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
 import {
-  Music,
-  Clock,
-  BookOpen,
-  ListMusic,
-  Timer,
-  BarChart2,
   ArrowRight,
+  BarChart2,
+  BookOpen,
   Check,
-} from 'lucide-react'
+  Clock,
+  ListMusic,
+  Music,
+  Timer,
+} from 'lucide-react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Jazz Practice — Your Personal Jazz Practice Companion',
-}
+};
 
 const FEATURES = [
   {
@@ -46,9 +46,9 @@ const FEATURES = [
     title: 'All Your Instruments',
     desc: 'Guitar, saxophone, piano, or anything else. Filter your stats and sessions by instrument anytime.',
   },
-]
+];
 
-const INSTRUMENTS = ['🎸 Guitar', '🎷 Saxophone', '🎹 Piano']
+const INSTRUMENTS = ['🎸 Guitar', '🎷 Saxophone', '🎹 Piano'];
 
 export default function LandingPage() {
   return (
@@ -271,5 +271,5 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

@@ -1,15 +1,16 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { SCALES, ROOTS, NOTE_NAMES, getScaleNotes, type Scale } from '@/data/scales'
+import { useState } from 'react';
 
-const ROOT_SIMPLE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+import { getScaleNotes, type IScale, SCALES } from '@/data/scales';
+
+const ROOT_SIMPLE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 export default function ScalesPage() {
-  const [root, setRoot] = useState('C')
-  const [selected, setSelected] = useState<Scale>(SCALES[0])
+  const [root, setRoot] = useState('C');
+  const [selected, setSelected] = useState<IScale>(SCALES[0]);
 
-  const notes = getScaleNotes(root, selected.intervals)
+  const notes = getScaleNotes(root, selected.intervals);
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -107,7 +108,7 @@ export default function ScalesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function PianoKeyboard({ notes, root }: { notes: string[]; root: string }) {
@@ -124,9 +125,9 @@ function PianoKeyboard({ notes, root }: { notes: string[]; root: string }) {
     { note: 'A', isBlack: false, offset: 9 },
     { note: 'A#', isBlack: true, offset: 10 },
     { note: 'B', isBlack: false, offset: 11 },
-  ]
+  ];
 
-  const whiteKeys = octaveKeys.filter((k) => !k.isBlack)
+  const whiteKeys = octaveKeys.filter((k) => !k.isBlack);
 
   return (
     <div className="mt-4">
@@ -134,8 +135,8 @@ function PianoKeyboard({ notes, root }: { notes: string[]; root: string }) {
       <div className="relative" style={{ height: 80, width: whiteKeys.length * 32 }}>
         {/* White keys */}
         {whiteKeys.map((key, i) => {
-          const inScale = notes.includes(key.note)
-          const isRoot = key.note === root
+          const inScale = notes.includes(key.note);
+          const isRoot = key.note === root;
           return (
             <div
               key={key.note}
@@ -144,18 +145,18 @@ function PianoKeyboard({ notes, root }: { notes: string[]; root: string }) {
               }`}
               style={{ left: i * 32, width: 30, top: 0, height: 80 }}
             />
-          )
+          );
         })}
         {/* Black keys */}
         {octaveKeys
           .filter((k) => k.isBlack)
           .map((key) => {
             const whiteIndex = whiteKeys.findIndex((w) => {
-              const wOffset = w.offset
-              return key.offset === wOffset + 1
-            })
-            const inScale = notes.includes(key.note)
-            const isRoot = key.note === root
+              const wOffset = w.offset;
+              return key.offset === wOffset + 1;
+            });
+            const inScale = notes.includes(key.note);
+            const isRoot = key.note === root;
             return (
               <div
                 key={key.note}
@@ -169,9 +170,9 @@ function PianoKeyboard({ notes, root }: { notes: string[]; root: string }) {
                   height: 50,
                 }}
               />
-            )
+            );
           })}
       </div>
     </div>
-  )
+  );
 }

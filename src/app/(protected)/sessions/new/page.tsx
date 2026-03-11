@@ -1,18 +1,19 @@
-'use client'
+'use client';
 
-import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Play, Pause, Square, Save } from 'lucide-react'
-import { addSession } from '@/services/sessions'
-import { useSessionTimer } from '@/store/sessionTimer'
-import type { Instrument, PracticeTopic } from '@/types'
+import { Pause, Play, Save, Square } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+
+import { addSession } from '@/services/sessions';
+import { useSessionTimer } from '@/store/sessionTimer';
+import type { Instrument, PracticeTopic } from '@/types';
 
 const INSTRUMENTS: { value: Instrument; label: string; emoji: string }[] = [
   { value: 'guitar', label: 'Guitar', emoji: '🎸' },
   { value: 'saxophone', label: 'Saxophone', emoji: '🎷' },
   { value: 'piano', label: 'Piano', emoji: '🎹' },
   { value: 'other', label: 'Other', emoji: '🎵' },
-]
+];
 
 const TOPICS: { value: PracticeTopic; label: string }[] = [
   { value: 'scales', label: 'Scales' },
@@ -25,70 +26,72 @@ const TOPICS: { value: PracticeTopic; label: string }[] = [
   { value: 'chords', label: 'Chords' },
   { value: 'sight-reading', label: 'Sight Reading' },
   { value: 'repertoire', label: 'Repertoire' },
-]
+];
 
 function formatTime(seconds: number): string {
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  const s = seconds % 60
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 export default function NewSessionPage() {
-  const router = useRouter()
-  const { state, elapsedSeconds, start, pause, resume, stop, reset, tick } = useSessionTimer()
+  const router = useRouter();
+  const { state, elapsedSeconds, start, pause, resume, stop, reset, tick } = useSessionTimer();
 
-  const [instrument, setInstrument] = useState<Instrument>('saxophone')
-  const [topics, setTopics] = useState<PracticeTopic[]>([])
-  const [notes, setNotes] = useState('')
-  const [bpm, setBpm] = useState('')
-  const [manualMinutes, setManualMinutes] = useState('')
-  const [useTimer, setUseTimer] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [instrument, setInstrument] = useState<Instrument>('saxophone');
+  const [topics, setTopics] = useState<PracticeTopic[]>([]);
+  const [notes, setNotes] = useState('');
+  const [bpm, setBpm] = useState('');
+  const [manualMinutes, setManualMinutes] = useState('');
+  const [useTimer, setUseTimer] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (state === 'running') {
-      tickRef.current = setInterval(tick, 1000)
+      tickRef.current = setInterval(tick, 1000);
     } else {
-      if (tickRef.current) clearInterval(tickRef.current)
+      if (tickRef.current) clearInterval(tickRef.current);
     }
     return () => {
-      if (tickRef.current) clearInterval(tickRef.current)
-    }
-  }, [state, tick])
+      if (tickRef.current) clearInterval(tickRef.current);
+    };
+  }, [state, tick]);
 
   // Clean up timer on unmount
   useEffect(
     () => () => {
-      reset()
+      reset();
     },
-    [reset]
-  )
+    [reset],
+  );
 
   function toggleTopic(topic: PracticeTopic) {
-    setTopics((prev) => (prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]))
+    setTopics((prev) =>
+      prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic],
+    );
   }
 
   async function handleSave() {
     const durationMinutes = useTimer
       ? Math.max(1, Math.round(elapsedSeconds / 60))
-      : parseInt(manualMinutes, 10)
+      : parseInt(manualMinutes, 10);
 
     if (!durationMinutes || durationMinutes < 1) {
-      alert('Please record at least 1 minute of practice.')
-      return
+      alert('Please record at least 1 minute of practice.');
+      return;
     }
     if (topics.length === 0) {
-      alert('Select at least one topic.')
-      return
+      alert('Select at least one topic.');
+      return;
     }
 
-    setSaving(true)
+    setSaving(true);
     try {
-      if (state === 'running') stop()
+      if (state === 'running') stop();
       await addSession({
         instrument,
         durationMinutes,
@@ -96,18 +99,19 @@ export default function NewSessionPage() {
         notes,
         bpm: bpm ? parseInt(bpm, 10) : undefined,
         date: new Date().toISOString().split('T')[0],
-      })
-      reset()
-      router.push('/sessions')
+      });
+      reset();
+      router.push('/sessions');
     } catch (err) {
-      console.error(err)
-      alert('Failed to save session. Check your Firebase config.')
+      console.error(err);
+      alert('Failed to save session. Check your Firebase config.');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
-  const canSave = topics.length > 0 && (useTimer ? elapsedSeconds > 0 : parseInt(manualMinutes) > 0)
+  const canSave =
+    topics.length > 0 && (useTimer ? elapsedSeconds > 0 : parseInt(manualMinutes) > 0);
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
@@ -287,5 +291,5 @@ export default function NewSessionPage() {
         {saving ? 'Saving…' : 'Save Session'}
       </button>
     </div>
-  )
+  );
 }

@@ -1,22 +1,22 @@
-export type JazzFeel = 'swing' | 'bossa' | 'ballad' | 'latin' | 'waltz' | 'funk'
-export type Difficulty = 'beginner' | 'intermediate' | 'advanced'
+export type JazzFeel = 'swing' | 'bossa' | 'ballad' | 'latin' | 'waltz' | 'funk';
+export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
-export interface JazzStandard {
-  id: string
-  title: string
-  composer: string
-  year: number
-  key: string
-  feel: JazzFeel[]
-  tempoRange: [number, number] // [min, max] BPM
-  difficulty: Difficulty
-  progression: string // short hand chord chart
-  tags: string[]
+export interface IJazzStandard {
+  id: string;
+  title: string;
+  composer: string;
+  year: number;
+  key: string;
+  feel: JazzFeel[];
+  tempoRange: [number, number]; // [min, max] BPM
+  difficulty: Difficulty;
+  progression: string; // short hand chord chart
+  tags: string[];
   /** 'builtin' = shipped with the app · 'custom' = added by the user */
-  source?: 'builtin' | 'custom'
+  source?: 'builtin' | 'custom';
 }
 
-export const JAZZ_STANDARDS: JazzStandard[] = [
+export const JAZZ_STANDARDS: IJazzStandard[] = [
   {
     id: 'autumn-leaves',
     title: 'Autumn Leaves',
@@ -368,4 +368,4 @@ export const JAZZ_STANDARDS: JazzStandard[] = [
     progression: 'CΔ7 | CΔ7 | G7 | G7 | CΔ7 | CΔ7 | G7 | CΔ7 …',
     tags: ['Sonny Rollins', 'calypso', 'latin', 'sax'],
   },
-]
+];

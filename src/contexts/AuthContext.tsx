@@ -1,74 +1,77 @@
-'use client'
+'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import type { User } from 'firebase/auth'
-import { onAuth, signInWithGoogle, signOut, migrateDeviceToUser } from '@/lib/auth'
-import { createOrUpdateUserProfile } from '@/services/userProfile'
-import { getDeviceId } from '@/lib/deviceId'
-import type { UserProfile } from '@/types'
+import type { User } from 'firebase/auth';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-interface AuthContextValue {
-  user: User | null
-  userProfile: UserProfile | null
-  loading: boolean
-  signIn: () => Promise<void>
-  logOut: () => Promise<void>
+import { migrateDeviceToUser, onAuth, signInWithGoogle, signOut } from '@/lib/auth';
+import { getDeviceId } from '@/lib/deviceId';
+import { createOrUpdateUserProfile } from '@/services/userProfile';
+import type { IUserProfile } from '@/types';
+
+interface IAuthContextValue {
+  user: User | null;
+  userProfile: IUserProfile | null;
+  loading: boolean;
+  signIn: () => Promise<void>;
+  logOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue>({
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = async (): Promise<void> => {};
+const AuthContext = createContext<IAuthContextValue>({
   user: null,
   userProfile: null,
   loading: true,
-  signIn: async () => {},
-  logOut: async () => {},
-})
+  signIn: noop,
+  logOut: noop,
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<IUserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuth(async (firebaseUser) => {
-      setUser(firebaseUser)
+      setUser(firebaseUser);
       if (firebaseUser) {
         try {
-          const profile = await createOrUpdateUserProfile(firebaseUser)
-          setUserProfile(profile)
+          const profile = await createOrUpdateUserProfile(firebaseUser);
+          setUserProfile(profile);
         } catch (err) {
-          console.error('Failed to load user profile:', err)
+          console.error('Failed to load user profile:', err);
         }
       } else {
-        setUserProfile(null)
+        setUserProfile(null);
       }
-      setLoading(false)
-    })
-    return unsubscribe
-  }, [])
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
   async function signIn() {
-    const deviceId = getDeviceId()
-    const firebaseUser = await signInWithGoogle()
+    const deviceId = getDeviceId();
+    const firebaseUser = await signInWithGoogle();
     // Migrate any anonymous sessions to the signed-in user
-    await migrateDeviceToUser(firebaseUser.uid, deviceId)
-    const profile = await createOrUpdateUserProfile(firebaseUser)
-    setUser(firebaseUser)
-    setUserProfile(profile)
+    await migrateDeviceToUser(firebaseUser.uid, deviceId);
+    const profile = await createOrUpdateUserProfile(firebaseUser);
+    setUser(firebaseUser);
+    setUserProfile(profile);
   }
 
   async function logOut() {
-    await signOut()
-    setUser(null)
-    setUserProfile(null)
+    await signOut();
+    setUser(null);
+    setUserProfile(null);
   }
 
   return (
     <AuthContext.Provider value={{ user, userProfile, loading, signIn, logOut }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  return useContext(AuthContext)
+  return useContext(AuthContext);
 }

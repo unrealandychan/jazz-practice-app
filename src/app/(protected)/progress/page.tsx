@@ -1,107 +1,107 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import {
-  LineChart,
+  CartesianGrid,
+  Cell,
   Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-} from 'recharts'
-import { getSessions } from '@/services/sessions'
-import type { PracticeSession, Instrument, PracticeTopic } from '@/types'
+} from 'recharts';
+
+import { getSessions } from '@/services/sessions';
+import type { Instrument, IPracticeSession } from '@/types';
 
 const INSTRUMENT_COLORS: Record<Instrument, string> = {
   guitar: '#c9a84c',
   saxophone: '#6c8ebf',
   piano: '#82ca9d',
   other: '#888',
-}
+};
 
 function getLast30Days(): string[] {
   return Array.from({ length: 30 }, (_, i) => {
-    const d = new Date()
-    d.setDate(d.getDate() - (29 - i))
-    return d.toISOString().split('T')[0]
-  })
+    const d = new Date();
+    d.setDate(d.getDate() - (29 - i));
+    return d.toISOString().split('T')[0];
+  });
 }
 
-function calculateStreak(sessions: PracticeSession[]): number {
-  if (!sessions.length) return 0
-  const dates = [...new Set(sessions.map((s) => s.date))].sort().reverse()
-  const today = new Date().toISOString().split('T')[0]
-  let streak = 0
-  let current = today
+function calculateStreak(sessions: IPracticeSession[]): number {
+  if (!sessions.length) return 0;
+  const dates = [...new Set(sessions.map((s) => s.date))].sort().reverse();
+  const today = new Date().toISOString().split('T')[0];
+  let streak = 0;
+  let current = today;
   for (const date of dates) {
     if (date === current) {
-      streak++
-      const d = new Date(current)
-      d.setDate(d.getDate() - 1)
-      current = d.toISOString().split('T')[0]
-    } else break
+      streak++;
+      const d = new Date(current);
+      d.setDate(d.getDate() - 1);
+      current = d.toISOString().split('T')[0];
+    } else break;
   }
-  return streak
+  return streak;
 }
 
 export default function ProgressPage() {
-  const [sessions, setSessions] = useState<PracticeSession[]>([])
-  const [loading, setLoading] = useState(true)
+  const [sessions, setSessions] = useState<IPracticeSession[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getSessions()
       .then(setSessions)
       .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setLoading(false));
+  }, []);
 
-  const last30 = getLast30Days()
+  const last30 = getLast30Days();
   const sessionMap = sessions.reduce<Record<string, number>>((acc, s) => {
-    acc[s.date] = (acc[s.date] ?? 0) + s.durationMinutes
-    return acc
-  }, {})
+    acc[s.date] = (acc[s.date] ?? 0) + s.durationMinutes;
+    return acc;
+  }, {});
 
   const chartData = last30.map((date) => ({
     date: date.slice(5), // MM-DD
     minutes: sessionMap[date] ?? 0,
-  }))
+  }));
 
   // Instrument breakdown
   const instrumentData = Object.entries(
     sessions.reduce<Record<string, number>>((acc, s) => {
-      acc[s.instrument] = (acc[s.instrument] ?? 0) + s.durationMinutes
-      return acc
-    }, {})
-  ).map(([name, value]) => ({ name, value }))
+      acc[s.instrument] = (acc[s.instrument] ?? 0) + s.durationMinutes;
+      return acc;
+    }, {}),
+  ).map(([name, value]) => ({ name, value }));
 
   // Topic breakdown
   const topicData = Object.entries(
     sessions.reduce<Record<string, number>>((acc, s) => {
       s.topics.forEach((t) => {
-        acc[t] = (acc[t] ?? 0) + s.durationMinutes
-      })
-      return acc
-    }, {})
+        acc[t] = (acc[t] ?? 0) + s.durationMinutes;
+      });
+      return acc;
+    }, {}),
   )
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
-    .map(([name, value]) => ({ name, value }))
+    .map(([name, value]) => ({ name, value }));
 
-  const totalMinutes = sessions.reduce((a, s) => a + s.durationMinutes, 0)
-  const streak = calculateStreak(sessions)
-  const avgSessionMinutes = sessions.length ? Math.round(totalMinutes / sessions.length) : 0
+  const totalMinutes = sessions.reduce((a, s) => a + s.durationMinutes, 0);
+  const streak = calculateStreak(sessions);
+  const avgSessionMinutes = sessions.length ? Math.round(totalMinutes / sessions.length) : 0;
 
   if (loading) {
     return (
       <div className="p-8">
         <p className="text-[var(--muted-foreground)]">Loading…</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -175,9 +175,9 @@ export default function ProgressPage() {
                             r={3}
                             fill="var(--accent)"
                           />
-                        )
+                        );
                       }
-                      return <g key={props.key} />
+                      return <g key={props.key} />;
                     }}
                   />
                 </LineChart>
@@ -236,7 +236,7 @@ export default function ProgressPage() {
                 <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)]">
                   <ul className="space-y-3">
                     {topicData.map(({ name, value }) => {
-                      const pct = Math.round((value / totalMinutes) * 100)
+                      const pct = Math.round((value / totalMinutes) * 100);
                       return (
                         <li key={name}>
                           <div className="flex justify-between text-sm mb-1">
@@ -250,7 +250,7 @@ export default function ProgressPage() {
                             />
                           </div>
                         </li>
-                      )
+                      );
                     })}
                   </ul>
                 </div>
@@ -260,5 +260,5 @@ export default function ProgressPage() {
         </>
       )}
     </div>
-  )
+  );
 }

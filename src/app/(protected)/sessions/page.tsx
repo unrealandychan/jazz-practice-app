@@ -1,16 +1,17 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { Plus, Trash2, Music } from 'lucide-react'
-import { getSessions, deleteSession } from '@/services/sessions'
-import type { PracticeSession, Instrument } from '@/types'
+import { Music, Plus, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+import { deleteSession, getSessions } from '@/services/sessions';
+import type { Instrument, IPracticeSession } from '@/types';
 
 function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes}m`
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m > 0 ? `${h}h ${m}m` : `${h}h`
+  if (minutes < 60) return `${minutes}m`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
 const INSTRUMENT_LABELS: Record<Instrument, string> = {
@@ -18,26 +19,26 @@ const INSTRUMENT_LABELS: Record<Instrument, string> = {
   saxophone: 'Saxophone',
   piano: 'Piano',
   other: 'Other',
-}
+};
 
 export default function SessionsPage() {
-  const [sessions, setSessions] = useState<PracticeSession[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<Instrument | 'all'>('all')
+  const [sessions, setSessions] = useState<IPracticeSession[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<Instrument | 'all'>('all');
 
   useEffect(() => {
     getSessions()
       .then(setSessions)
       .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setLoading(false));
+  }, []);
 
-  const filtered = filter === 'all' ? sessions : sessions.filter((s) => s.instrument === filter)
+  const filtered = filter === 'all' ? sessions : sessions.filter((s) => s.instrument === filter);
 
   async function handleDelete(id: string) {
-    if (!confirm('Delete this session?')) return
-    await deleteSession(id)
-    setSessions((prev) => prev.filter((s) => s.id !== id))
+    if (!confirm('Delete this session?')) return;
+    await deleteSession(id);
+    setSessions((prev) => prev.filter((s) => s.id !== id));
   }
 
   return (
@@ -138,5 +139,5 @@ export default function SessionsPage() {
         </ul>
       )}
     </div>
-  )
+  );
 }

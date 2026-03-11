@@ -1,25 +1,28 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Play, Square, Minus, Plus } from 'lucide-react'
-import { useMetronome, type SwingFeel } from '@/store/metronome'
+import { Minus, Play, Plus, Square } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { Sequence } from 'tone';
+
+import { type SwingFeel, useMetronome } from '@/store/metronome';
 
 // Tone.js is dynamically imported to avoid SSR issues
-let Tone: typeof import('tone') | null = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let Tone: any | null = null;
 
 const SWING_LABELS: Record<SwingFeel, string> = {
   straight: 'Straight',
   light: 'Light Swing',
   heavy: 'Heavy Swing',
-}
+};
 
 const SWING_RATIOS: Record<SwingFeel, number> = {
   straight: 0.5,
   light: 0.6,
   heavy: 0.67,
-}
+};
 
-const TIME_SIGNATURES = [2, 3, 4, 5, 6, 7]
+const TIME_SIGNATURES = [2, 3, 4, 5, 6, 7];
 
 export default function MetronomePage() {
   const {
@@ -33,108 +36,108 @@ export default function MetronomePage() {
     setSwing,
     setPlaying,
     setCurrentBeat,
-  } = useMetronome()
+  } = useMetronome();
 
-  const [toneLoaded, setToneLoaded] = useState(false)
-  const sequenceRef = useRef<import('tone').Sequence | null>(null)
-  const tapTimesRef = useRef<number[]>([])
+  const [toneLoaded, setToneLoaded] = useState(false);
+  const sequenceRef = useRef<Sequence | null>(null);
+  const tapTimesRef = useRef<number[]>([]);
 
   // Load Tone.js on client only
   useEffect(() => {
     import('tone').then((t) => {
-      Tone = t
-      setToneLoaded(true)
-    })
-  }, [])
+      Tone = t;
+      setToneLoaded(true);
+    });
+  }, []);
 
   const stopMetronome = useCallback(() => {
     if (sequenceRef.current) {
-      sequenceRef.current.stop()
-      sequenceRef.current.dispose()
-      sequenceRef.current = null
+      sequenceRef.current.stop();
+      sequenceRef.current.dispose();
+      sequenceRef.current = null;
     }
-    Tone?.getTransport().stop()
-    setPlaying(false)
-    setCurrentBeat(0)
-  }, [setPlaying, setCurrentBeat])
+    Tone?.getTransport().stop();
+    setPlaying(false);
+    setCurrentBeat(0);
+  }, [setPlaying, setCurrentBeat]);
 
   const startMetronome = useCallback(async () => {
-    if (!Tone) return
-    await Tone.start()
+    if (!Tone) return;
+    await Tone.start();
 
-    const transport = Tone.getTransport()
-    transport.bpm.value = bpm
+    const transport = Tone.getTransport();
+    transport.bpm.value = bpm;
 
-    const beats = Array.from({ length: timeSignature }, (_, i) => i)
+    const beats = Array.from({ length: timeSignature }, (_, i) => i);
 
     const synth = new Tone.MembraneSynth({
       pitchDecay: 0.02,
       octaves: 4,
       envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 },
-    }).toDestination()
+    }).toDestination();
 
     const accentSynth = new Tone.MembraneSynth({
       pitchDecay: 0.02,
       octaves: 6,
       envelope: { attack: 0.001, decay: 0.12, sustain: 0, release: 0.1 },
-    }).toDestination()
+    }).toDestination();
 
-    const swingRatio = SWING_RATIOS[swing]
+    const _swingRatio = SWING_RATIOS[swing];
 
-    let beatIndex = 0
+    let _beatIndex = 0;
     const seq = new Tone.Sequence(
-      (time, beat) => {
-        const s = beat === 0 ? accentSynth : synth
-        s.triggerAttackRelease(beat === 0 ? 'C2' : 'C3', '32n', time)
+      (time: string, beat: number | string) => {
+        const s = beat === 0 ? accentSynth : synth;
+        s.triggerAttackRelease(beat === 0 ? 'C2' : 'C3', '32n', time);
         // Swing: delay the "and" (off-beat) of every beat
         Tone!.getDraw().schedule(() => {
-          setCurrentBeat(beat as number)
-        }, time)
-        beatIndex++
+          setCurrentBeat(beat as number);
+        }, time);
+        _beatIndex++;
       },
       beats,
       // Swing timing: use 8n subdivision and offset odd beats
-      '4n'
-    )
+      '4n',
+    );
 
-    seq.start(0)
-    transport.start()
-    sequenceRef.current = seq
-    setPlaying(true)
-  }, [bpm, timeSignature, swing, setPlaying, setCurrentBeat])
+    seq.start(0);
+    transport.start();
+    sequenceRef.current = seq;
+    setPlaying(true);
+  }, [bpm, timeSignature, swing, setPlaying, setCurrentBeat]);
 
   // Stop when component unmounts
   useEffect(
     () => () => {
-      stopMetronome()
+      stopMetronome();
     },
-    [stopMetronome]
-  )
+    [stopMetronome],
+  );
 
   // Restart if bpm/timeSignature/swing changes while playing
   useEffect(() => {
     if (isPlaying) {
-      stopMetronome()
+      stopMetronome();
       // Small delay to let stop propagate
-      setTimeout(() => startMetronome(), 50)
+      setTimeout(() => startMetronome(), 50);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bpm, timeSignature, swing])
+  }, [bpm, timeSignature, swing]);
 
   function handleTap() {
-    const now = Date.now()
-    tapTimesRef.current.push(now)
+    const now = Date.now();
+    tapTimesRef.current.push(now);
 
     // Only use last 8 taps
     if (tapTimesRef.current.length > 8) {
-      tapTimesRef.current = tapTimesRef.current.slice(-8)
+      tapTimesRef.current = tapTimesRef.current.slice(-8);
     }
 
     if (tapTimesRef.current.length >= 2) {
-      const intervals = tapTimesRef.current.slice(1).map((t, i) => t - tapTimesRef.current[i])
-      const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length
-      const tappedBpm = Math.round(60000 / avg)
-      setBpm(tappedBpm)
+      const intervals = tapTimesRef.current.slice(1).map((t, i) => t - tapTimesRef.current[i]);
+      const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+      const tappedBpm = Math.round(60000 / avg);
+      setBpm(tappedBpm);
     }
   }
 
@@ -279,5 +282,5 @@ export default function MetronomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

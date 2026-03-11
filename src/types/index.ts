@@ -1,14 +1,14 @@
-export type Instrument = 'guitar' | 'saxophone' | 'piano' | 'other'
+export type Instrument = 'guitar' | 'saxophone' | 'piano' | 'other';
 
-export interface UserProfile {
-  uid: string
-  email: string
-  displayName: string
-  photoURL: string | null
-  instruments: Instrument[]
-  practiceGoalMinutes: number // daily goal
-  createdAt: number
-  updatedAt: number
+export interface IUserProfile {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL: string | null;
+  instruments: Instrument[];
+  practiceGoalMinutes: number; // daily goal
+  createdAt: number;
+  updatedAt: number;
 }
 
 export type PracticeTopic =
@@ -21,16 +21,16 @@ export type PracticeTopic =
   | 'ear-training'
   | 'chords'
   | 'sight-reading'
-  | 'repertoire'
+  | 'repertoire';
 
-export interface PracticeSession {
-  id?: string
-  deviceId: string
-  instrument: Instrument
-  durationMinutes: number
-  topics: PracticeTopic[]
-  notes: string
-  bpm?: number
-  date: string // ISO date string YYYY-MM-DD
-  createdAt: number // unix ms
+export interface IPracticeSession {
+  id?: string;
+  deviceId: string;
+  instrument: Instrument;
+  durationMinutes: number;
+  topics: PracticeTopic[];
+  notes: string;
+  bpm?: number;
+  date: string; // ISO date string YYYY-MM-DD
+  createdAt: number; // unix ms
 }

@@ -1,30 +1,31 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { Music } from 'lucide-react'
-import { useAuth } from '@/contexts/AuthContext'
+import { Music } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
-  const { signIn } = useAuth()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const { signIn } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   async function handleGoogleSignIn() {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
     try {
-      await signIn()
-      const from = searchParams.get('from') ?? '/dashboard'
-      router.push(from)
+      await signIn();
+      const from = searchParams.get('from') ?? '/dashboard';
+      router.push(from);
     } catch (err) {
-      setError('Sign-in failed. Please try again.')
-      console.error(err)
+      setError('Sign-in failed. Please try again.');
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -93,5 +94,5 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }

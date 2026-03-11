@@ -1,55 +1,56 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { Clock, Music, TrendingUp, Plus, Flame } from 'lucide-react'
-import { getSessions } from '@/services/sessions'
-import type { PracticeSession } from '@/types'
+import { Clock, Flame, Music, Plus, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+import { getSessions } from '@/services/sessions';
+import type { IPracticeSession } from '@/types';
 
 function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes}m`
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m > 0 ? `${h}h ${m}m` : `${h}h`
+  if (minutes < 60) return `${minutes}m`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function calculateStreak(sessions: PracticeSession[]): number {
-  if (!sessions.length) return 0
-  const dates = [...new Set(sessions.map((s) => s.date))].sort().reverse()
-  const today = new Date().toISOString().split('T')[0]
-  let streak = 0
-  let current = today
+function calculateStreak(sessions: IPracticeSession[]): number {
+  if (!sessions.length) return 0;
+  const dates = [...new Set(sessions.map((s) => s.date))].sort().reverse();
+  const today = new Date().toISOString().split('T')[0];
+  let streak = 0;
+  let current = today;
 
   for (const date of dates) {
     if (date === current) {
-      streak++
-      const d = new Date(current)
-      d.setDate(d.getDate() - 1)
-      current = d.toISOString().split('T')[0]
+      streak++;
+      const d = new Date(current);
+      d.setDate(d.getDate() - 1);
+      current = d.toISOString().split('T')[0];
     } else {
-      break
+      break;
     }
   }
-  return streak
+  return streak;
 }
 
 export default function DashboardPage() {
-  const [sessions, setSessions] = useState<PracticeSession[]>([])
-  const [loading, setLoading] = useState(true)
+  const [sessions, setSessions] = useState<IPracticeSession[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getSessions()
       .then(setSessions)
       .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setLoading(false));
+  }, []);
 
-  const today = new Date().toISOString().split('T')[0]
-  const todaySessions = sessions.filter((s) => s.date === today)
-  const todayMinutes = todaySessions.reduce((a, s) => a + s.durationMinutes, 0)
-  const totalMinutes = sessions.reduce((a, s) => a + s.durationMinutes, 0)
-  const streak = calculateStreak(sessions)
-  const recentSessions = sessions.slice(0, 5)
+  const today = new Date().toISOString().split('T')[0];
+  const todaySessions = sessions.filter((s) => s.date === today);
+  const todayMinutes = todaySessions.reduce((a, s) => a + s.durationMinutes, 0);
+  const totalMinutes = sessions.reduce((a, s) => a + s.durationMinutes, 0);
+  const streak = calculateStreak(sessions);
+  const recentSessions = sessions.slice(0, 5);
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -164,7 +165,7 @@ export default function DashboardPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function StatCard({
@@ -174,11 +175,11 @@ function StatCard({
   icon,
   accent,
 }: {
-  label: string
-  value: string
-  sub: string
-  icon: React.ReactNode
-  accent?: boolean
+  label: string;
+  value: string;
+  sub: string;
+  icon: React.ReactNode;
+  accent?: boolean;
 }) {
   return (
     <div
@@ -199,5 +200,5 @@ function StatCard({
       <p className="text-3xl font-bold text-[var(--foreground)]">{value}</p>
       <p className="text-xs text-[var(--muted-foreground)] mt-1">{sub}</p>
     </div>
-  )
+  );
 }

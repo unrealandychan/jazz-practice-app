@@ -1,15 +1,21 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useTransition } from 'react'
-import { Search, Plus, Trash2, X } from 'lucide-react'
-import * as Dialog from '@radix-ui/react-dialog'
-import { JAZZ_STANDARDS, type JazzFeel, type Difficulty, type JazzStandard } from '@/data/standards'
+import { Plus, Search, Trash2, X } from 'lucide-react';
+import { useEffect, useState, useTransition } from 'react';
+
+import { useAuth } from '@/contexts/AuthContext';
 import {
-  getCustomStandards,
+  type Difficulty,
+  type IJazzStandard,
+  JAZZ_STANDARDS,
+  type JazzFeel,
+} from '@/data/standards';
+import {
   addCustomStandard,
   deleteCustomStandard,
-} from '@/services/customStandards'
-import { useAuth } from '@/contexts/AuthContext'
+  getCustomStandards,
+} from '@/services/customStandards';
+import * as Dialog from '@radix-ui/react-dialog';
 
 const FEEL_LABELS: Record<JazzFeel, string> = {
   swing: 'Swing',
@@ -18,16 +24,16 @@ const FEEL_LABELS: Record<JazzFeel, string> = {
   latin: 'Latin',
   waltz: 'Waltz',
   funk: 'Funk',
-}
+};
 
-const ALL_FEELS: JazzFeel[] = ['swing', 'bossa', 'ballad', 'latin', 'waltz', 'funk']
-const DIFFICULTIES: Difficulty[] = ['beginner', 'intermediate', 'advanced']
+const ALL_FEELS: JazzFeel[] = ['swing', 'bossa', 'ballad', 'latin', 'waltz', 'funk'];
+const DIFFICULTIES: Difficulty[] = ['beginner', 'intermediate', 'advanced'];
 
 const DIFFICULTY_COLORS: Record<Difficulty, string> = {
   beginner: 'text-emerald-400',
   intermediate: 'text-amber-400',
   advanced: 'text-rose-400',
-}
+};
 
 const EMPTY_FORM = {
   title: '',
@@ -40,80 +46,80 @@ const EMPTY_FORM = {
   difficulty: 'intermediate' as Difficulty,
   progression: '',
   tags: '',
-}
+};
 
 export default function StandardsPage() {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
-  const [customStandards, setCustomStandards] = useState<JazzStandard[]>([])
-  const [loadingCustom, setLoadingCustom] = useState(true)
+  const [customStandards, setCustomStandards] = useState<IJazzStandard[]>([]);
+  const [loadingCustom, setLoadingCustom] = useState(true);
 
-  const [search, setSearch] = useState('')
-  const [feelFilter, setFeelFilter] = useState<JazzFeel | 'all'>('all')
-  const [diffFilter, setDiffFilter] = useState<Difficulty | 'all'>('all')
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'builtin' | 'custom'>('all')
-  const [selected, setSelected] = useState<JazzStandard | null>(null)
+  const [search, setSearch] = useState('');
+  const [feelFilter, setFeelFilter] = useState<JazzFeel | 'all'>('all');
+  const [diffFilter, setDiffFilter] = useState<Difficulty | 'all'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'builtin' | 'custom'>('all');
+  const [selected, setSelected] = useState<IJazzStandard | null>(null);
 
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [form, setForm] = useState(EMPTY_FORM)
-  const [formError, setFormError] = useState('')
-  const [isPending, startTransition] = useTransition()
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState('');
+  const [isPending, startTransition] = useTransition();
 
   // Load custom standards
   useEffect(() => {
     async function load() {
       try {
         if (user) {
-          const standards = await getCustomStandards(user.uid)
-          setCustomStandards(standards)
+          const standards = await getCustomStandards(user.uid);
+          setCustomStandards(standards);
         }
       } catch (err) {
-        console.error(err)
+        console.error(err);
       } finally {
-        setLoadingCustom(false)
+        setLoadingCustom(false);
       }
     }
-    void load()
-  }, [user])
+    void load();
+  }, [user]);
 
   // Merge built-ins + custom
-  const allStandards: JazzStandard[] = [
+  const allStandards: IJazzStandard[] = [
     ...JAZZ_STANDARDS.map((s) => ({ ...s, source: 'builtin' as const })),
     ...customStandards,
-  ]
+  ];
 
   const filtered = allStandards.filter((s) => {
     const matchSearch =
       !search ||
       s.title.toLowerCase().includes(search.toLowerCase()) ||
       s.composer.toLowerCase().includes(search.toLowerCase()) ||
-      s.tags.some((t) => t.toLowerCase().includes(search.toLowerCase()))
-    const matchFeel = feelFilter === 'all' || s.feel.includes(feelFilter)
-    const matchDiff = diffFilter === 'all' || s.difficulty === diffFilter
-    const matchSource = sourceFilter === 'all' || s.source === sourceFilter
-    return matchSearch && matchFeel && matchDiff && matchSource
-  })
+      s.tags.some((t) => t.toLowerCase().includes(search.toLowerCase()));
+    const matchFeel = feelFilter === 'all' || s.feel.includes(feelFilter);
+    const matchDiff = diffFilter === 'all' || s.difficulty === diffFilter;
+    const matchSource = sourceFilter === 'all' || s.source === sourceFilter;
+    return matchSearch && matchFeel && matchDiff && matchSource;
+  });
 
   function toggleFeel(feel: JazzFeel) {
     setForm((f) => ({
       ...f,
       feel: f.feel.includes(feel) ? f.feel.filter((x) => x !== feel) : [...f.feel, feel],
-    }))
+    }));
   }
 
   function handleAddStandard() {
-    if (!user) return
+    if (!user) return;
     if (!form.title.trim()) {
-      setFormError('Title is required.')
-      return
+      setFormError('Title is required.');
+      return;
     }
     if (!form.key.trim()) {
-      setFormError('Key is required.')
-      return
+      setFormError('Key is required.');
+      return;
     }
     if (form.feel.length === 0) {
-      setFormError('Select at least one feel.')
-      return
+      setFormError('Select at least one feel.');
+      return;
     }
 
     startTransition(async () => {
@@ -131,8 +137,8 @@ export default function StandardsPage() {
             .split(',')
             .map((t) => t.trim())
             .filter(Boolean),
-        })
-        const newStandard: JazzStandard = {
+        });
+        const newStandard: IJazzStandard = {
           id: newId,
           title: form.title.trim(),
           composer: form.composer.trim() || 'Unknown',
@@ -147,29 +153,29 @@ export default function StandardsPage() {
             .map((t) => t.trim())
             .filter(Boolean),
           source: 'custom',
-        }
-        setCustomStandards((prev) => [newStandard, ...prev])
-        setDialogOpen(false)
-        setForm(EMPTY_FORM)
-        setFormError('')
+        };
+        setCustomStandards((prev) => [newStandard, ...prev]);
+        setDialogOpen(false);
+        setForm(EMPTY_FORM);
+        setFormError('');
       } catch (err) {
-        console.error(err)
-        setFormError('Failed to save. Please try again.')
+        console.error(err);
+        setFormError('Failed to save. Please try again.');
       }
-    })
+    });
   }
 
-  function handleDelete(standard: JazzStandard) {
-    if (!user || standard.source !== 'custom') return
+  function handleDelete(standard: IJazzStandard) {
+    if (!user || standard.source !== 'custom') return;
     startTransition(async () => {
       try {
-        await deleteCustomStandard(user.uid, standard.id)
-        setCustomStandards((prev) => prev.filter((s) => s.id !== standard.id))
-        if (selected?.id === standard.id) setSelected(null)
+        await deleteCustomStandard(user.uid, standard.id);
+        setCustomStandards((prev) => prev.filter((s) => s.id !== standard.id));
+        if (selected?.id === standard.id) setSelected(null);
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
-    })
+    });
   }
 
   return (
@@ -186,10 +192,10 @@ export default function StandardsPage() {
           <Dialog.Root
             open={dialogOpen}
             onOpenChange={(o) => {
-              setDialogOpen(o)
+              setDialogOpen(o);
               if (!o) {
-                setForm(EMPTY_FORM)
-                setFormError('')
+                setForm(EMPTY_FORM);
+                setFormError('');
               }
             }}
           >
@@ -548,8 +554,8 @@ export default function StandardsPage() {
             {standard.source === 'custom' && (
               <button
                 onClick={(e) => {
-                  e.stopPropagation()
-                  handleDelete(standard)
+                  e.stopPropagation();
+                  handleDelete(standard);
                 }}
                 disabled={isPending}
                 title="Delete this standard"
@@ -579,5 +585,5 @@ export default function StandardsPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

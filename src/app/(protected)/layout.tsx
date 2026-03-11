@@ -1,19 +1,20 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
-import { Sidebar } from '@/components/Sidebar'
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+import { Sidebar } from '@/components/Sidebar';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth()
-  const router = useRouter()
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace('/login')
+      router.replace('/login');
     }
-  }, [user, loading, router])
+  }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -23,12 +24,12 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
           <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!user) {
     // Middleware handles redirect; this is a client-side fallback
-    return null
+    return null;
   }
 
   return (
@@ -36,5 +37,5 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
       <Sidebar />
       <main className="flex-1 ml-60 min-h-screen">{children}</main>
     </div>
-  )
+  );
 }
