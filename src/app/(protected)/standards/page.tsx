@@ -39,7 +39,9 @@ export default function StandardsPage() {
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-2">Jazz Standards Library</h1>
-      <p className="text-[var(--muted-foreground)] mb-6">{JAZZ_STANDARDS.length} standards with chord progressions</p>
+      <p className="text-[var(--muted-foreground)] mb-6">
+        {JAZZ_STANDARDS.length} standards with chord progressions
+      </p>
 
       {/* Search + filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -100,16 +102,22 @@ export default function StandardsPage() {
           >
             <div className="flex items-start justify-between gap-2 mb-2">
               <h3 className="font-semibold text-[var(--foreground)] text-sm">{standard.title}</h3>
-              <span className={`text-xs font-medium capitalize flex-shrink-0 ${DIFFICULTY_COLORS[standard.difficulty]}`}>
+              <span
+                className={`text-xs font-medium capitalize flex-shrink-0 ${DIFFICULTY_COLORS[standard.difficulty]}`}
+              >
                 {standard.difficulty}
               </span>
             </div>
             <p className="text-xs text-[var(--muted-foreground)] mb-2">
-              {standard.composer} · {standard.year} · <strong className="text-[var(--foreground)]">{standard.key}</strong>
+              {standard.composer} · {standard.year} ·{' '}
+              <strong className="text-[var(--foreground)]">{standard.key}</strong>
             </p>
             <div className="flex flex-wrap gap-1 mb-3">
               {standard.feel.map((f) => (
-                <span key={f} className="text-xs px-2 py-0.5 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
+                <span
+                  key={f}
+                  className="text-xs px-2 py-0.5 rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]"
+                >
                   {FEEL_LABELS[f]}
                 </span>
               ))}
@@ -128,7 +136,10 @@ export default function StandardsPage() {
                 </p>
                 <div className="flex flex-wrap gap-1 mt-3">
                   {standard.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-0.5 rounded bg-[var(--muted)] text-[var(--muted-foreground)]">
+                    <span
+                      key={tag}
+                      className="text-xs px-2 py-0.5 rounded bg-[var(--muted)] text-[var(--muted-foreground)]"
+                    >
                       #{tag}
                     </span>
                   ))}

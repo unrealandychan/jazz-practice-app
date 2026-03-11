@@ -79,7 +79,10 @@ export default function SessionsPage() {
         <div className="text-center py-16 border border-dashed border-[var(--border)] rounded-xl">
           <Music className="w-8 h-8 text-[var(--muted-foreground)] mx-auto mb-3" />
           <p className="text-[var(--muted-foreground)]">No sessions found.</p>
-          <Link href="/sessions/new" className="text-sm text-[var(--accent)] hover:underline mt-2 inline-block">
+          <Link
+            href="/sessions/new"
+            className="text-sm text-[var(--accent)] hover:underline mt-2 inline-block"
+          >
             Log your first session →
           </Link>
         </div>
@@ -113,11 +116,15 @@ export default function SessionsPage() {
                   ))}
                 </div>
                 {s.notes && (
-                  <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">{s.notes}</p>
+                  <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
+                    {s.notes}
+                  </p>
                 )}
               </div>
               <div className="flex items-center gap-4 ml-4">
-                <p className="text-lg font-bold text-[var(--accent)]">{formatDuration(s.durationMinutes)}</p>
+                <p className="text-lg font-bold text-[var(--accent)]">
+                  {formatDuration(s.durationMinutes)}
+                </p>
                 <button
                   onClick={() => s.id && handleDelete(s.id)}
                   className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--muted-foreground)] hover:text-[var(--destructive)]"

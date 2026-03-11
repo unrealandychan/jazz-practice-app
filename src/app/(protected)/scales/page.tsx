@@ -14,7 +14,9 @@ export default function ScalesPage() {
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-2">Scales &amp; Modes</h1>
-      <p className="text-[var(--muted-foreground)] mb-8">Jazz scale reference for all instruments.</p>
+      <p className="text-[var(--muted-foreground)] mb-8">
+        Jazz scale reference for all instruments.
+      </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Scale list */}
@@ -138,11 +140,7 @@ function PianoKeyboard({ notes, root }: { notes: string[]; root: string }) {
             <div
               key={key.note}
               className={`absolute border border-[var(--border)] rounded-b-md transition-colors ${
-                isRoot
-                  ? 'bg-[var(--accent)]'
-                  : inScale
-                  ? 'bg-white/20'
-                  : 'bg-[var(--muted)]'
+                isRoot ? 'bg-[var(--accent)]' : inScale ? 'bg-white/20' : 'bg-[var(--muted)]'
               }`}
               style={{ left: i * 32, width: 30, top: 0, height: 80 }}
             />

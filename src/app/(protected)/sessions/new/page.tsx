@@ -61,12 +61,15 @@ export default function NewSessionPage() {
   }, [state, tick])
 
   // Clean up timer on unmount
-  useEffect(() => () => { reset() }, [reset])
+  useEffect(
+    () => () => {
+      reset()
+    },
+    [reset]
+  )
 
   function toggleTopic(topic: PracticeTopic) {
-    setTopics((prev) =>
-      prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]
-    )
+    setTopics((prev) => (prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]))
   }
 
   async function handleSave() {

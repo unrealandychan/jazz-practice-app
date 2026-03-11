@@ -22,7 +22,18 @@ const SWING_RATIOS: Record<SwingFeel, number> = {
 const TIME_SIGNATURES = [2, 3, 4, 5, 6, 7]
 
 export default function MetronomePage() {
-  const { bpm, isPlaying, timeSignature, swing, currentBeat, setBpm, setTimeSignature, setSwing, setPlaying, setCurrentBeat } = useMetronome()
+  const {
+    bpm,
+    isPlaying,
+    timeSignature,
+    swing,
+    currentBeat,
+    setBpm,
+    setTimeSignature,
+    setSwing,
+    setPlaying,
+    setCurrentBeat,
+  } = useMetronome()
 
   const [toneLoaded, setToneLoaded] = useState(false)
   const sequenceRef = useRef<import('tone').Sequence | null>(null)
@@ -93,7 +104,12 @@ export default function MetronomePage() {
   }, [bpm, timeSignature, swing, setPlaying, setCurrentBeat])
 
   // Stop when component unmounts
-  useEffect(() => () => { stopMetronome() }, [stopMetronome])
+  useEffect(
+    () => () => {
+      stopMetronome()
+    },
+    [stopMetronome]
+  )
 
   // Restart if bpm/timeSignature/swing changes while playing
   useEffect(() => {
@@ -115,9 +131,7 @@ export default function MetronomePage() {
     }
 
     if (tapTimesRef.current.length >= 2) {
-      const intervals = tapTimesRef.current
-        .slice(1)
-        .map((t, i) => t - tapTimesRef.current[i])
+      const intervals = tapTimesRef.current.slice(1).map((t, i) => t - tapTimesRef.current[i])
       const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length
       const tappedBpm = Math.round(60000 / avg)
       setBpm(tappedBpm)

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import { Sidebar } from '@/components/Sidebar'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -14,8 +14,23 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Jazz Practice',
-  description: 'Your personal jazz practice companion for guitar, saxophone, and piano.',
+  title: {
+    default: 'Jazz Practice',
+    template: '%s | Jazz Practice',
+  },
+  description:
+    'Your personal jazz practice companion — track sessions, explore scales, browse standards, and keep your tempo sharp. Built by Eddie Chan.',
+  authors: [{ name: 'Eddie Chan' }],
+  keywords: [
+    'jazz',
+    'practice',
+    'guitar',
+    'saxophone',
+    'piano',
+    'scales',
+    'standards',
+    'metronome',
+  ],
 }
 
 export default function RootLayout({
@@ -25,13 +40,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="flex-1 ml-60 min-h-screen">
-            {children}
-          </main>
-        </div>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
+      >
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   )

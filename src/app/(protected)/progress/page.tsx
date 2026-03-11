@@ -116,8 +116,13 @@ export default function ProgressPage() {
           { label: 'Day Streak', value: `${streak} days` },
           { label: 'Avg Session', value: `${avgSessionMinutes}m` },
         ].map(({ label, value }) => (
-          <div key={label} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-            <p className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] mb-2">{label}</p>
+          <div
+            key={label}
+            className="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)]"
+          >
+            <p className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] mb-2">
+              {label}
+            </p>
             <p className="text-2xl font-bold text-[var(--foreground)]">{value}</p>
           </div>
         ))}
@@ -125,13 +130,17 @@ export default function ProgressPage() {
 
       {sessions.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-[var(--border)] rounded-xl">
-          <p className="text-[var(--muted-foreground)]">No data yet. Log some practice sessions to see your progress!</p>
+          <p className="text-[var(--muted-foreground)]">
+            No data yet. Log some practice sessions to see your progress!
+          </p>
         </div>
       ) : (
         <>
           {/* Daily practice chart */}
           <div className="mb-10">
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Daily Practice (Last 30 Days)</h2>
+            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
+              Daily Practice (Last 30 Days)
+            </h2>
             <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)]">
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={chartData}>
@@ -158,7 +167,15 @@ export default function ProgressPage() {
                     strokeWidth={2}
                     dot={(props) => {
                       if ((props.payload as { minutes: number }).minutes > 0) {
-                        return <circle key={props.key} cx={props.cx} cy={props.cy} r={3} fill="var(--accent)" />
+                        return (
+                          <circle
+                            key={props.key}
+                            cx={props.cx}
+                            cy={props.cy}
+                            r={3}
+                            fill="var(--accent)"
+                          />
+                        )
                       }
                       return <g key={props.key} />
                     }}
@@ -173,7 +190,9 @@ export default function ProgressPage() {
             {/* Instrument */}
             {instrumentData.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">By Instrument</h2>
+                <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
+                  By Instrument
+                </h2>
                 <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)]">
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>

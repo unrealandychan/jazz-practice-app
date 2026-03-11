@@ -56,7 +56,11 @@ export default function DashboardPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[var(--foreground)]">Dashboard</h1>
         <p className="text-[var(--muted-foreground)] mt-1">
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          {new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+          })}
         </p>
       </div>
 
@@ -94,7 +98,9 @@ export default function DashboardPage() {
             <p className="font-semibold text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors">
               Log Practice Session
             </p>
-            <p className="text-sm text-[var(--muted-foreground)]">Record what you practiced today</p>
+            <p className="text-sm text-[var(--muted-foreground)]">
+              Record what you practiced today
+            </p>
           </div>
         </Link>
 
@@ -107,7 +113,9 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="font-semibold text-[var(--foreground)]">Open Metronome</p>
-            <p className="text-sm text-[var(--muted-foreground)]">Tap tempo, swing, time signature</p>
+            <p className="text-sm text-[var(--muted-foreground)]">
+              Tap tempo, swing, time signature
+            </p>
           </div>
         </Link>
       </div>
@@ -125,7 +133,9 @@ export default function DashboardPage() {
         ) : recentSessions.length === 0 ? (
           <div className="text-center py-12 border border-dashed border-[var(--border)] rounded-xl">
             <Music className="w-8 h-8 text-[var(--muted-foreground)] mx-auto mb-3" />
-            <p className="text-[var(--muted-foreground)]">No sessions yet. Log your first practice!</p>
+            <p className="text-[var(--muted-foreground)]">
+              No sessions yet. Log your first practice!
+            </p>
           </div>
         ) : (
           <ul className="space-y-2">
@@ -135,8 +145,12 @@ export default function DashboardPage() {
                 className="flex items-center justify-between p-4 rounded-lg bg-[var(--card)] border border-[var(--border)]"
               >
                 <div>
-                  <p className="text-sm font-medium text-[var(--foreground)] capitalize">{s.instrument}</p>
-                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{s.topics.join(' · ')}</p>
+                  <p className="text-sm font-medium text-[var(--foreground)] capitalize">
+                    {s.instrument}
+                  </p>
+                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                    {s.topics.join(' · ')}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-[var(--accent)]">
