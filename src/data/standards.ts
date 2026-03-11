@@ -12,6 +12,8 @@ export interface JazzStandard {
   difficulty: Difficulty
   progression: string // short hand chord chart
   tags: string[]
+  /** 'builtin' = shipped with the app · 'custom' = added by the user */
+  source?: 'builtin' | 'custom'
 }
 
 export const JAZZ_STANDARDS: JazzStandard[] = [
@@ -204,7 +206,8 @@ export const JAZZ_STANDARDS: JazzStandard[] = [
     feel: ['swing'],
     tempoRange: [140, 220],
     difficulty: 'intermediate',
-    progression: 'B♭7 | E♭7 | B♭7 | B♭7 | E♭7 | E♭7 | B♭7 | B♭7 | Fm7 | B♭7 | E♭7 | E♭7 | B♭7 | Fm7 | B♭7 | B♭7 ||',
+    progression:
+      'B♭7 | E♭7 | B♭7 | B♭7 | E♭7 | E♭7 | B♭7 | B♭7 | Fm7 | B♭7 | E♭7 | E♭7 | B♭7 | Fm7 | B♭7 | B♭7 ||',
     tags: ['blues', 'B♭ blues', 'Sonny Rollins', 'tenor sax'],
   },
   {
@@ -240,7 +243,8 @@ export const JAZZ_STANDARDS: JazzStandard[] = [
     feel: ['swing', 'ballad', 'latin'],
     tempoRange: [60, 160],
     difficulty: 'beginner',
-    progression: 'Am7 | E7 | Am7 | E7 | Am7 | E7 | Am7 | Am7 | DmΔ7 | DmΔ7 | Am7 | Am7 | Bm7♭5 | E7 | Am7 | E7 ||',
+    progression:
+      'Am7 | E7 | Am7 | E7 | Am7 | E7 | Am7 | Am7 | DmΔ7 | DmΔ7 | Am7 | Am7 | Bm7♭5 | E7 | Am7 | E7 ||',
     tags: ['Gershwin', 'minor', 'essential', 'standard'],
   },
   {
@@ -324,7 +328,8 @@ export const JAZZ_STANDARDS: JazzStandard[] = [
     feel: ['swing'],
     tempoRange: [200, 280],
     difficulty: 'advanced',
-    progression: 'BΔ7 | D7 | GΔ7 | B♭7 | E♭Δ7 | Am7 D7 | GΔ7 | B♭7 | E♭Δ7 | F♯7 | BΔ7 | Fm7 B♭7 | E♭Δ7 | Am7 D7 | GΔ7 | C♯m7 F♯7 ||',
+    progression:
+      'BΔ7 | D7 | GΔ7 | B♭7 | E♭Δ7 | Am7 D7 | GΔ7 | B♭7 | E♭Δ7 | F♯7 | BΔ7 | Fm7 B♭7 | E♭Δ7 | Am7 D7 | GΔ7 | C♯m7 F♯7 ||',
     tags: ['Coltrane', 'Coltrane changes', 'major thirds', 'advanced'],
   },
   {

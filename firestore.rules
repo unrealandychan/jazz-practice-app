@@ -5,6 +5,13 @@ service cloud.firestore {
     // Users — authenticated users can read/write their own profile only
     match /users/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      // Custom standards — private to each user
+      match /customStandards/{standardId} {
+        allow read, create, delete: if request.auth != null && request.auth.uid == uid;
+        // No update — delete + re-create instead (simpler client model)
+        allow update: if false;
+      }
     }
 
     // Sessions — owner-scoped (deviceId matches UID for authenticated users)
