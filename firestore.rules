@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Sessions — read/write only for the owning device or authenticated user
+    match /sessions/{sessionId} {
+      allow read, write: if
+        // Authenticated user owns the session
+        (request.auth != null && resource.data.deviceId == request.auth.uid) ||
+        // Unauthenticated device owns the session (deviceId is a UUID, not a UID)
+        (request.auth == null && request.resource != null &&
+         resource.data.deviceId == request.resource.data.deviceId);
+
+      allow create: if
+        // Authenticated users can create sessions tagged with their UID
+        (request.auth != null && request.resource.data.deviceId == request.auth.uid) ||
+        // Anonymous device can create sessions with any deviceId (trust client for now)
+        request.auth == null;
+    }
+
+    // Standards — public read, no writes from clients
+    match /standards/{standardId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
