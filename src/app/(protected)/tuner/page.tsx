@@ -1,12 +1,12 @@
 'use client';
 
 import { Mic, MicOff } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 
 // Autocorrelation-based pitch detection
-function detectPitch(buf: Float32Array, sampleRate: number): number | null {
+function detectPitch(buf: Float32Array<ArrayBuffer>, sampleRate: number): number | null {
   const SIZE = buf.length;
   let rms = 0;
   for (let i = 0; i < SIZE; i++) rms += buf[i] * buf[i];
@@ -92,7 +92,7 @@ const ticks = TICK_DEGS.map((deg) => {
   };
 });
 
-export default function TunerPage() {
+export default function TunerPage(): React.JSX.Element {
   const [isListening, setIsListening] = useState(false);
   const [noteName, setNoteName] = useState('--');
   const [octave, setOctave] = useState<number | null>(null);
@@ -105,12 +105,12 @@ export default function TunerPage() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
-  const bufRef = useRef<Float32Array | null>(null);
+  const bufRef = useRef<Float32Array<ArrayBuffer> | null>(null);
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Use a ref to avoid stale closures in the RAF loop
   const hasSignalRef = useRef(false);
 
-  const stopListening = useCallback(() => {
+  const stopListening = useCallback((): void => {
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
@@ -121,6 +121,7 @@ export default function TunerPage() {
     }
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     audioCtxRef.current?.close().catch(() => {});
     audioCtxRef.current = null;
     analyserRef.current = null;
@@ -134,7 +135,7 @@ export default function TunerPage() {
     setHasSignal(false);
   }, []);
 
-  const startListening = useCallback(async () => {
+  const startListening = useCallback(async (): Promise<void> => {
     setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -158,8 +159,10 @@ export default function TunerPage() {
   useEffect(() => {
     if (!isListening || !analyserRef.current || !bufRef.current) return;
 
-    const analyse = () => {
+    const analyse = (): void => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       analyserRef.current!.getFloatTimeDomainData(bufRef.current!);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const freq = detectPitch(bufRef.current!, audioCtxRef.current!.sampleRate);
 
       if (freq !== null) {
@@ -202,7 +205,11 @@ export default function TunerPage() {
   // Map cents to needle rotation: ±50 cents → ±60°
   const needleAngle = (Math.max(-50, Math.min(50, cents)) / 50) * 60;
   const isInTune = hasSignal && Math.abs(cents) <= 5;
-  const needleColor = isInTune ? '#22c55e' : hasSignal ? 'var(--accent)' : 'var(--muted-foreground)';
+  const needleColor = isInTune
+    ? '#22c55e'
+    : hasSignal
+      ? 'var(--accent)'
+      : 'var(--muted-foreground)';
 
   return (
     <div className="p-4 sm:p-8 max-w-2xl mx-auto">
@@ -292,21 +299,29 @@ export default function TunerPage() {
                   strokeLinecap="round"
                   opacity={isListening ? 1 : 0.3}
                 />
-                <circle
-                  cx="0"
-                  cy="0"
-                  r="5"
-                  fill={needleColor}
-                  opacity={isListening ? 1 : 0.3}
-                />
+                <circle cx="0" cy="0" r="5" fill={needleColor} opacity={isListening ? 1 : 0.3} />
               </g>
             </g>
 
             {/* Flat / sharp labels */}
-            <text x="14" y="116" fill="var(--muted-foreground)" fontSize="12" textAnchor="middle" opacity="0.7">
+            <text
+              x="14"
+              y="116"
+              fill="var(--muted-foreground)"
+              fontSize="12"
+              textAnchor="middle"
+              opacity="0.7"
+            >
               ♭
             </text>
-            <text x="186" y="116" fill="var(--muted-foreground)" fontSize="12" textAnchor="middle" opacity="0.7">
+            <text
+              x="186"
+              y="116"
+              fill="var(--muted-foreground)"
+              fontSize="12"
+              textAnchor="middle"
+              opacity="0.7"
+            >
               ♯
             </text>
           </svg>
@@ -328,7 +343,9 @@ export default function TunerPage() {
             )}
           </div>
           {frequency !== null && (
-            <span className="text-sm text-[var(--muted-foreground)]">{frequency.toFixed(1)} Hz</span>
+            <span className="text-sm text-[var(--muted-foreground)]">
+              {frequency.toFixed(1)} Hz
+            </span>
           )}
         </div>
 
@@ -341,9 +358,7 @@ export default function TunerPage() {
             {hasSignal ? (cents >= 0 ? `+${cents}` : `${cents}`) : '±0'}
           </span>
           <span className="text-[var(--muted-foreground)] text-sm">cents</span>
-          {isInTune && (
-            <span className="text-green-500 text-sm font-medium">In Tune ✓</span>
-          )}
+          {isInTune && <span className="text-green-500 text-sm font-medium">In Tune ✓</span>}
         </div>
 
         {/* Start / Stop button */}
