@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart2, BookOpen, Clock, ListMusic, LogOut, Music, Timer, User, X } from 'lucide-react';
+import { Activity, BarChart2, BookOpen, Clock, ListMusic, LogOut, Music, Timer, User, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: '/scales', label: 'Scales & Chords', icon: BookOpen },
   { href: '/standards', label: 'Standards', icon: ListMusic },
   { href: '/metronome', label: 'Metronome', icon: Timer },
+  { href: '/tuner', label: 'Tuner', icon: Activity },
   { href: '/progress', label: 'Progress', icon: BarChart2 },
 ];
 
