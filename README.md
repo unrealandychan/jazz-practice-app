@@ -1,3 +1,16 @@
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=160&section=header&text=jazz--practice--app&fontSize=38&fontColor=ffffff&fontAlignY=38&desc=Open+source+Jazz+practice+app+for+musicians&descAlignY=58&descSize=14" alt="Header"/>
+
+[![Stars](https://img.shields.io/github/stars/unrealandychan/jazz-practice-app?style=for-the-badge&logo=github&color=f78166&logoColor=white&labelColor=0d1117)](https://github.com/unrealandychan/jazz-practice-app/stargazers)
+[![Forks](https://img.shields.io/github/forks/unrealandychan/jazz-practice-app?style=for-the-badge&logo=github&color=79c0ff&logoColor=white&labelColor=0d1117)](https://github.com/unrealandychan/jazz-practice-app/network/members)
+[![Language](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&style=for-the-badge&logoColor=white&labelColor=0d1117)](https://github.com/unrealandychan/jazz-practice-app)
+[![Open Source](https://img.shields.io/badge/Open_Source-❤️-ff6b6b?style=for-the-badge&labelColor=0d1117)](https://github.com/unrealandychan/jazz-practice-app)
+
+</div>
+
+---
+
 # JazzSession
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -64,8 +77,7 @@ cp .env.example .env.local
 Fill in your Firebase project credentials:
 
 ```env
-NEXT_PUBLIC_FIREBASE_API_KEY=
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_API_KEY=NEXT_P...AIN=
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
